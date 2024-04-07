@@ -1,3 +1,7 @@
 [[r2_buckets]]
-binding = "MY_BUCKET"
-bucket_name = "your-buckets-name"
+binding = "MY_BUCKET" # This is the name of the bucket binding in the R2 config
+bucket_name = "your-buckets-name" # The name of the bucket in the cloud provider (which is always Cloudflare in this case)
+
+[vars]
+UPLOAD_HOSTNAMES = "upload.yourdomain.com,upload2.yourdomain.com" # The hostnames that will be used for uploads (always include the default workers.dev hostname)
+READ_HOSTNAMES = "read.yourdomain.com,read2.yourdomain.com" # The hostnames that will be used for reads (always include the default workers.dev hostname)

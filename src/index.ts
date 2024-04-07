@@ -1,6 +1,8 @@
 interface Env {
 	MY_BUCKET: R2Bucket,
 	AUTH_TOKEN: string,
+	UPLOAD_HOSTNAMES: string,
+	READ_HOSTNAMES: string
   }
   
   function objectNotFound(objectName: string): Response {
@@ -13,9 +15,12 @@ interface Env {
   }
   
   export default {
+
 	async fetch(request: Request, env: Env): Promise<Response> {
 	  const url = new URL(request.url)
 	  const objectName = url.pathname.slice(1)
+	  const uhns = env.UPLOAD_HOSTNAMES.split(',')
+	  const rhns = env.READ_HOSTNAMES.split(',')
 
 	  if (request.headers.get('Authorization') !== env.AUTH_TOKEN && request.method !== 'GET' && request.method !== 'HEAD') {
 		return new Response(JSON.stringify({
@@ -29,7 +34,7 @@ interface Env {
 	  console.log(`${request.method} object ${objectName}: ${request.url}`)
   
 	  if (request.method === 'GET' || request.method === 'HEAD') {
-		if (url.hostname !== 'img.martindev.com' && url.hostname !== 'img.martindev.xyz' && url.hostname !== 'img.mbfrias.workers.dev' && url.hostname !== 'r2-proxy.mbfrias.workers.dev') return new Response(JSON.stringify({
+		if (!rhns.includes(url.hostname)) return new Response(JSON.stringify({
 			error: "WRONG HOSTNAME",
 			message: "this hostname does not support object retrieval - you silly goose!"
 		}), { status: 400 });
@@ -91,7 +96,7 @@ interface Env {
 		})
 	  }
 	  if (request.method === 'PUT' || request.method == 'POST') {
-		if (url.hostname !== 'upload.img.martindev.com' && url.hostname !== 'upload.img.martindev.xyz' && url.hostname !== 'r2-proxy.mbfrias.workers.dev') return new Response(JSON.stringify({
+		if (!uhns.includes(url.hostname)) return new Response(JSON.stringify({
 			error: "WRONG HOSTNAME",
 			message: "this hostname does not support object uploading - you silly goose!"
 		
