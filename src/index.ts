@@ -98,6 +98,12 @@ interface Env {
 		}), { status: 400, headers: {
 			'content-type': 'application/json; charset=UTF-8'
 		} });
+		if (!request.body) return new Response(JSON.stringify({
+			error: "NO BODY",
+			message: "you must think im mental if you think i can upload thin air - please provide a request body"
+		}), { status: 400, headers: {
+			'content-type': 'application/json; charset=UTF-8'
+		} });
 		const object = await env.MY_BUCKET.put(objectName, request.body, {
 		  httpMetadata: request.headers,
 		})
